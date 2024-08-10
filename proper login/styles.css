@@ -1,0 +1,110 @@
+@font-face {
+    font-family: 'CustomFont';
+    src: url('../fonts/Silka-Mono-RegularCustomFont.ttf') format('truetype');
+}
+
+body {
+    background: #212126;
+    color: #fdfdfd;
+    font-family: 'CustomFont', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    flex-direction: column;
+}
+
+.signup-container, .quiz-container {
+    text-align: center;
+    width: 300px;
+}
+
+.signup-container h1, .quiz-container h2 {
+    margin-bottom: 1.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: .15em solid orange;
+    width: 0;
+    animation: typing 3.5s steps(0, end) forwards;
+}
+
+.quiz-container h2 {
+    border-right: none;
+    width: auto;
+    animation: none;
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+.input-container {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+input[type="text"], input[type="email"], input[type="password"], input[type="radio"] {
+    width: 100%;
+    padding: 0.5rem 0;
+    background: transparent;
+    border: none;
+    color: #fdfdfd;
+}
+
+input::placeholder {
+    color: #fdfdfd;
+    opacity: 0.5;
+}
+
+input:focus {
+    outline: none;
+}
+
+.underline {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 100%;
+    background: #fdfdfd;
+    transition: transform 0.3s ease;
+    transform: scaleX(0.8);
+}
+
+input:focus + .underline {
+    transform: scaleX(1);
+}
+
+button {
+    background: #333;
+    color: #fdfdfd;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #555;
+}
+
+button:active {
+    background: #666;
+}
+
+.login-btn-container {
+    display: flex;
+    justify-content: center;
+}
+
+.footer {
+    margin-top: 1rem;
+}
+
+.footer a {
+    color: #fdfdfd;
+    text-decoration: underline;
+}

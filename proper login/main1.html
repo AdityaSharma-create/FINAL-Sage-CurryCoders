@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smooth Transition</title>
+    <link rel="stylesheet" href="C:\Users\aarush\Downloads\sage\styles.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <style>
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('../fonts/Silka-Mono-RegularCustomFont.ttf') format('truetype');
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 200vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Space Mono', Arial, sans-serif;
+        }
+
+        .section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            transition: background-color 1s ease;
+            color: #212126;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        #welcome-section {
+            background-color: #212126;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'silka_monoregular', 'Space Mono', Arial, sans-serif;
+            color: #fdfdfd;
+            flex-direction: column;
+        }
+
+        #welcome-section h1 {
+            font-size: 20rem;
+            margin: 0;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        #welcome-section p {
+            font-size: 1.5rem;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        #login-section {
+            background-color: #212126;
+            opacity: 0;
+            transition: opacity 1s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #login-section.visible {
+            opacity: 1;
+        }
+
+        .signup-container, .quiz-container {
+            text-align: center;
+            width: 300px;
+            color: #fdfdfd;
+            font-family: 'Space Mono', 'CustomFont', sans-serif;
+        }
+
+        .signup-container h1, .quiz-container h2 {
+            margin-bottom: 1.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: .15em solid orange;
+            width: 0;
+            animation: typing 3.5s steps(40, end) forwards;
+        }
+
+        .quiz-container h2 {
+            border-right: none;
+            width: auto;
+            animation: none;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"], input[type="radio"] {
+            width: 100%;
+            padding: 0.5rem 0;
+            background: transparent;
+            border: none;
+            color: #fdfdfd;
+            font-family: 'Space Mono', 'CustomFont', sans-serif;
+        }
+
+        input::placeholder {
+            color: #fdfdfd;
+            opacity: 0.5;
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        .underline {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 2px;
+            width: 100%;
+            background: #fdfdfd;
+            transition: transform 0.3s ease;
+            transform: scaleX(0.8);
+        }
+
+        input:focus + .underline {
+            transform: scaleX(1);
+        }
+
+        button {
+            background: #333;
+            color: #fdfdfd;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background 0.3s ease;
+            font-family: 'Space Mono', 'CustomFont', sans-serif;
+        }
+
+        button:hover {
+            background: #555;
+        }
+
+        button:active {
+            background: #666;
+        }
+
+        .login-btn-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .footer {
+            margin-top: 1rem;
+        }
+
+        .footer a {
+            color: #fdfdfd;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-section" class="section">
+        <div class="container">
+            <p>Welcome to</p>
+            <h1>sage.</h1>
+        </div>
+    </div>
+
+    <div id="login-section" class="section">
+        <div class="signup-container">
+            <h1>Sign Up</h1>
+            <form id="signup-form">
+                <div class="input-container">
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                    <div class="underline"></div>
+                </div>
+                <div class="input-container">
+                    <input type="email" id="email" name="email" placeholder="Email" required>
+                    <div class="underline"></div>
+                </div>
+                <div class="input-container">
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <div class="underline"></div>
+                </div>
+                <div class="login-btn-container">
+                    <button type="submit" class="login-btn">Sign Up</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="quiz-container" id="quiz-container" style="display: none;">
+            <h2>Quiz</h2>
+            <form id="quiz-form">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            document.getElementById('signup-form').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'block';
+            showNextQuestion();
+        });
+
+        let currentQuestionIndex = 0;
+        let selectedCounselingType = '';
+        const questions = {
+            common: [
+                {
+                    question: "Are you seeking career counseling or college counseling?",
+                    type: "radio",
+                    name: "counseling-type",
+                    options: ["Career Counseling", "College Counseling"]
+                }
+            ],
+            career: [
+                {
+                    question: "",
+                    type: "text",
+                    name: "education-level"
+                },
+                {
+                    question: "What are your primary career goals? Short-term (1-2 years)?",
+                    type: "text",
+                    name: "short-term-goals"
+                },
+                {
+                    question: "What are your primary career goals? Long-term (5-10 years)?",
+                    type: "text",
+                    name: "long-term-goals"
+                },
+                {
+                    question: "What industries are you most interested in working in?",
+                    type: "text",
+                    name: "industries"
+                },
+                {
+                    question: "What values are most important to you in your career (e.g., ethics, innovation, collaboration)?",
+                    type: "text",
+                    name: "values"
+                },
+                {
+                    question: "What specific roles or job titles are you aiming for?",
+                    type: "text",
+                    name: "job-titles"
+                },
+                {
+                    question: "Are there specific companies or organizations you aspire to work for?",
+                    type: "text",
+                    name: "companies"
+                }
+            ],
+            college: [
+                {
+                    question: "What subjects are you most interested in?",
+                    type: "text",
+                    name: "subjects-interest"
+                },
+                {
+                    question: "What are your academic strengths and weaknesses? Strengths:",
+                    type: "text",
+                    name: "academic-strengths"
+                },
+                {
+                    question: "What are your academic strengths and weaknesses? Weaknesses:",
+                    type: "text",
+                    name: "academic-weaknesses"
+                },
+                {
+                    question: "What type of colleges are you considering (e.g., liberal arts, research universities, community colleges)?",
+                    type: "text",
+                    name: "college-type"
+                },
+                {
+                    question: "Do you have specific colleges or universities in mind?",
+                    type: "text",
+                    name: "specific-colleges"
+                },
+                {
+                    question: "What majors or fields of study are you interested in pursuing?",
+                    type: "text",
+                    name: "majors"
+                },
+                {
+                    question: "What extracurricular activities or clubs are you interested in participating in?",
+                    type: "text",
+                    name: "extracurriculars"
+                }
+            ]
+        };
+
+        function showNextQuestion() {
+            const quizForm = document.getElementById('quiz-form');
+            quizForm.innerHTML = '';
+
+            let questionSet;
+            if (selectedCounselingType === 'career-counseling') {
+                questionSet = questions.career;
+            } else if (selectedCounselingType === 'college-counseling') {
+                questionSet = questions.college;
+            } else {
+                questionSet = questions.common;
+            }
+
+            if (currentQuestionIndex < questionSet.length) {
+                const questionData = questionSet[currentQuestionIndex];
+                const questionElement = document.createElement('div');
+                questionElement.className = 'quiz-question';
+
+                const questionLabel = document.createElement('p');
+                questionLabel.textContent = questionData.question;
+                questionElement.appendChild(questionLabel);
+
+                if (questionData.type === 'radio') {
+                    questionData.options.forEach(option => {
+                        const optionElement = document.createElement('input');
+                        optionElement.type = 'radio';
+                        optionElement.id = option.toLowerCase().replace(' ', '-');
+                        optionElement.name = questionData.name;
+                        optionElement.value = option.toLowerCase().replace(' ', '-');
+                        questionElement.appendChild(optionElement);
+
+                        const optionLabel = document.createElement('label');
+                        optionLabel.htmlFor = optionElement.id;
+                        optionLabel.textContent = option;
+                        questionElement.appendChild(optionLabel);
+                        questionElement.appendChild(document.createElement('br'));
+                    });
+                } else {
+                    const inputElement = document.createElement('input');
+                    inputElement.type = questionData.type;
+                    inputElement.name = questionData.name;
+                    inputElement.required = true;
+                    questionElement.appendChild(inputElement);
+                }
+
+                const nextButton = document.createElement('button');
+                nextButton.type = 'button';
+                nextButton.textContent = 'Next';
+                nextButton.onclick = () => {
+                    if (questionData.type === 'radio') {
+                        const selectedOption = document.querySelector(`input[name="${questionData.name}"]:checked`);
+                        if (selectedOption) {
+                            selectedCounselingType = selectedOption.value;
+                            currentQuestionIndex = 0;
+                            showNextQuestion();
+                        }
+                    } else {
+                        currentQuestionIndex++;
+                        showNextQuestion();
+                    }
+                };
+                questionElement.appendChild(nextButton);
+
+                quizForm.appendChild(questionElement);
+            } else {
+                const submitButton = document.createElement('button');
+                submitButton.type = 'submit';
+                submitButton.textContent = 'Submit';
+                quizForm.appendChild(submitButton);
+            }
+        }
+
+        window.addEventListener('scroll', function() {
+            const loginSection = document.getElementById('login-section');
+            const welcomeSection = document.getElementById('welcome-section');
+            const threshold = window.innerHeight / 2;
+
+            if (window.scrollY > threshold) {
+                loginSection.classList.add('visible');
+                welcomeSection.style.backgroundColor = '#212126';
+            } else {
+                loginSection.classList.remove('visible');
+                welcomeSection.style.backgroundColor = '#212126';
+            }
+        });
+    </script>
+
+</body>
+</html>
